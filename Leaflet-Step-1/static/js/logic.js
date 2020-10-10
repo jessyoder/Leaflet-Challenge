@@ -1,14 +1,24 @@
-var queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
+// var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
 
-d3.json(queryUrl, function(data){
-    console.log(data.features)
-    var geometry = data.features[0].geometry;
-    console.log(geometry)
-    var properties = data.features[0].properties;
-    console.log(properties)
-    // createFeatures(data.features)
-})
+// d3.json(url, function(data){
+//     console.log(data.features)
+//     // var geometry = data.features[0].geometry;
+//     // console.log(geometry)
+//     // var properties = data.features[0].properties;
+//     // console.log(properties)
+//     // createFeatures(data.features)
+// })
 
+var myMap = L.map("mapid", { 
+    center: [45.52, -122.67], 
+    zoom: 13                  
+  }); 
 
-
-
+L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+    attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
+    tileSize: 512,  
+    maxZoom: 18,   
+    zoomOffset: -1,
+    id: "mapbox/streets-v11",
+    accessToken: API_KEY
+}).addTo(myMap); 
