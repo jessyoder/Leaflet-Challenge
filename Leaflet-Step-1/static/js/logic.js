@@ -6,7 +6,7 @@ d3.json(url, function(data){
     // console.log(geometry)
     // var properties = data.features[0].properties;
     // console.log(properties)
-    createFeatures()
+    // createFeatures()
 })
 
 function createMap(earthquakes) {
@@ -54,7 +54,7 @@ function createMap(earthquakes) {
 function createFeatures(response) {
   
   // Pull the "stations" property off of response.data
-  var features = response.data.features;
+  var features = response.features;
 
   // Initialize an array to hold bike markers
   var locations = [];
@@ -64,12 +64,10 @@ function createFeatures(response) {
     var feature = features[index];
 
     // For each station, create a marker and bind a popup with the station's name
-    var location = L.marker([location.geometry.coordinates[1], location.geometry.coordinates[0]])
+    var location = L.marker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]])
       .bindPopup("<h3>" + feature.properties.place + "<h3><h3>Magnitude: " + feature.properties.mag + "</h3>");
 
     // Add the marker to the bikeMarkers array
-    console.log(locations)
-
     locations.push(location);
   }
 
@@ -77,4 +75,4 @@ function createFeatures(response) {
   createMap(L.layerGroup(locations));
 }
 
-d3.json(url, createMarkers)
+d3.json(url, createFeatures)
