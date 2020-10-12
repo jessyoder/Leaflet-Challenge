@@ -17,7 +17,7 @@ function getColor(d) {
 };
 
 function markerSize(radius) {
-  return (radius);
+  return radius * 25000;
 }
 
 function createFeatures(earthquakeData) {
@@ -45,23 +45,23 @@ function createFeatures(earthquakeData) {
 function createMap(earthquakes) {
 
   // Create the tile layer that will be the background of the map
-  var lightmap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+  var darkmap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
     attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
     maxZoom: 18,
-    id: "light-v10",
+    id: "dark-v10",
     accessToken: API_KEY
   });
 
-  var satellitemap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+  var streetmap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
       attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
       maxZoom: 18,
-      id: "satellite-v9",
+      id: "streets-v11",
       accessToken: API_KEY
   });
 
   var baseMaps = {
-    "Satellite Map": satellitemap,
-    "Light Map": lightmap
+    "Dark Map": darkmap,
+    "Street Map": streetmap,
   };
 
   var overlayMaps = {
@@ -69,9 +69,9 @@ function createMap(earthquakes) {
   }
 
   var myMap = L.map("mapid", {
-    center: [35.546, -77.0525],
+    center: [34.156113, -118.131943],
     zoom: 3,
-    layers: [satellitemap, earthquakes]
+    layers: [darkmap, earthquakes]
   });
 
   L.control.layers(baseMaps, overlayMaps, {
