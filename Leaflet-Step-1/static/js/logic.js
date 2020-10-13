@@ -18,29 +18,30 @@ function getColor(d) {
 
 function markerSize(radius) {
   return radius * 25000;
-}
+};
 
 function createFeatures(earthquakeData) {
   var earthquakes = L.geoJSON(earthquakeData, {
-  // Define a function we want to run once for each feature in the features array
-  // Give each feature a popup describing the place and time of the earthquake
+  
   onEachFeature : function (feature, layer) {
-    layer.bindPopup('<h4>Location: ' + feature.properties.place + '</h4><hr><h4>Magnitude: ' + feature.properties.mag + '</h4>')
-    },
+
+    // Give each feature a popup describing the place and magnitude
+    layer.bindPopup('<h4>Location: ' + feature.properties.place + '</h4><hr><h4>Magnitude: ' + feature.properties.mag + '</h4>')},
+    
+    // Give each circle size and color based on magnitude
     pointToLayer: function (feature, latlng) {
       return new L.circle(latlng,
         {radius: markerSize(feature.properties.mag),
         fillColor: getColor(feature.geometry.coordinates[2]),
         color: 'black',
         fillOpacity: 0.75,
-        stroke: false,
-    })
+        stroke: false
+      })
   }
-  });
-  // Sending our earthquakes layer to the createMap function
-  createMap(earthquakes);
-// }
+})
 
+// Sending our earthquakes layer to the createMap function
+createMap(earthquakes)
 
 function createMap(earthquakes) {
 
@@ -52,16 +53,16 @@ function createMap(earthquakes) {
     accessToken: API_KEY
   });
 
-  var streetmap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+  var satmap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
       attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
       maxZoom: 18,
-      id: "streets-v11",
+      id: "satellite-v9",
       accessToken: API_KEY
   });
 
   var baseMaps = {
     "Dark Map": darkmap,
-    "Street Map": streetmap,
+    "Satellite Map": satmap,
   };
 
   var overlayMaps = {
@@ -77,5 +78,25 @@ function createMap(earthquakes) {
   L.control.layers(baseMaps, overlayMaps, {
     collapsed: false
   }).addTo(myMap);
+
+  var legend = L.control({position: 'bottomright'});
+
+  legend.onAdd = function (map) {
+
+      var div = L.DomUtil.create('div', 'info legend'),
+          grades = [0, 1, 2, 3, 4, 5],
+          labels = [];
+
+      // loop through our density intervals and generate a label with a colored square for each interval
+      for (var i = 0; i < grades.length; i++) {
+          div.innerHTML +=
+              '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
+              grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+      }
+
+      return div;
+  };
+
+  legend.addTo(myMap);
 }
 }
