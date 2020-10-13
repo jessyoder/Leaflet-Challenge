@@ -1,10 +1,14 @@
+// Store API endpoint inside url variable
 var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
+// Store tectonic plates data inside tplate variable
 var tplates = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json"
+
+// Perform a GET request to the query URL
 d3.json(url, function(data) { 
-  // console.log(data.features)
   createFeatures(data.features); 
 });
 
+// Create a function that returns a color based on earthquake depth
 function getColor(d) {
   switch(true) {
     case d > 5:
@@ -22,10 +26,12 @@ function getColor(d) {
   }
 }
 
+// Create a function that gathers earthquake magnitude
 function getRadius(radius) {
   return radius * 25000;
 };
 
+// Define a function to run once for each feature in the features array
 function createFeatures(earthquakeData) {
   var earthquakes = L.geoJSON(earthquakeData, {
   
@@ -66,24 +72,29 @@ function createMap(earthquakes) {
       accessToken: API_KEY
   });
 
+  // Define a baseMaps object to hold our base layers
   var baseMaps = {
     "Dark Map": darkmap,
     "Satellite Map": satmap,
   };
 
+  // Create a variable with tectonic plates data
   var tectonicPlates = new L.LayerGroup();
-
+  
+  // Create overlay object to hold our overlay layer
   var overlayMaps = {
     Earthquakes: earthquakes,
     "Tectonic Plates":tectonicPlates
   }
 
+  // Create the map, giving it the darkmap and earthquakes layers to display on load
   var myMap = L.map("mapid", {
     center: [34.0133, -6.8326],
     zoom: 3,
     layers: [darkmap, earthquakes, tectonicPlates]
   });
 
+  // Perform a GET request to the tectonic plates URL
   d3.json(tplates, function(pdata) {
     L.geoJson(pdata, {
       color: "blue",
@@ -92,10 +103,12 @@ function createMap(earthquakes) {
     .addTo(tectonicPlates);
   })
 
+  // Create a layer control, pass in our baseMaps and overlayMaps, add the layer control to the map
   L.control.layers(baseMaps, overlayMaps, {
     collapsed: false
   }).addTo(myMap);
 
+  // Create a legend 
   var legend = L.control({position: 'bottomright'});
 
   legend.onAdd = function (myMap) {
@@ -104,7 +117,7 @@ function createMap(earthquakes) {
           grades = [0, 1, 2, 3, 4, 5],
           labels = [];
 
-      // loop through our density intervals and generate a label with a colored square for each interval
+      // loop through our intervals and generate a label with a colored square for each interval
       for (var i = 0; i < grades.length; i++) {
           div.innerHTML +=
               '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
@@ -114,6 +127,7 @@ function createMap(earthquakes) {
       return div;
   };
 
+  // Add legend to the map
   legend.addTo(myMap);
 }
 }
