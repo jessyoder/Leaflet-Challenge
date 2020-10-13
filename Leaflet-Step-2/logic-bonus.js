@@ -1,5 +1,5 @@
 var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
-
+var tplates = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json"
 d3.json(url, function(data) { 
   // console.log(data.features)
   createFeatures(data.features); 
@@ -71,15 +71,26 @@ function createMap(earthquakes) {
     "Satellite Map": satmap,
   };
 
+  var tectonicPlates = new L.LayerGroup();
+
   var overlayMaps = {
     Earthquakes: earthquakes,
+    "Tectonic Plates":tectonicPlates
   }
 
   var myMap = L.map("mapid", {
     center: [34.0133, -6.8326],
     zoom: 3,
-    layers: [darkmap, earthquakes]
+    layers: [darkmap, earthquakes, tectonicPlates]
   });
+
+  d3.json(tplates, function(pdata) {
+    L.geoJson(pdata, {
+      color: "blue",
+      weight: 2
+    })
+    .addTo(tectonicPlates);
+  })
 
   L.control.layers(baseMaps, overlayMaps, {
     collapsed: false
