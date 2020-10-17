@@ -35,10 +35,10 @@ function createFeatures(earthquakeData) {
   
   onEachFeature : function (feature, layer) {
 
-    // Give each feature a popup describing the location and magnitude
+    // Give each feature a popup describing the place and magnitude
     layer.bindPopup('<h4>Location: ' + feature.properties.place + '</h4><hr><h4>Magnitude: ' + feature.properties.mag + '</h4>')},
     
-    // Give each circle size and color based on magnitude and depth
+    // Give each circle size and color based on magnitude
     pointToLayer: function (feature, latlng) {
       return new L.circle(latlng,
         {radius: getRadius(feature.properties.mag),
@@ -76,16 +76,19 @@ function createMap(earthquakes) {
     "Satellite Map": satmap,
   };
 
+  // Create a variable with tectonic plates data
+  var tectonicPlates = new L.LayerGroup();
+  
   // Create overlay object to hold our overlay layer
   var overlayMaps = {
-    Earthquakes: earthquakes,
+    Earthquakes: earthquakes
   }
 
   // Create the map, giving it the darkmap and earthquakes layers to display on load
   var myMap = L.map("mapid", {
     center: [34.0133, -6.8326],
     zoom: 3,
-    layers: [darkmap, earthquakes]
+    layers: [darkmap, earthquakes, tectonicPlates]
   });
 
   // Create a layer control, pass in our baseMaps and overlayMaps, add the layer control to the map
@@ -100,8 +103,9 @@ function createMap(earthquakes) {
 
       var div = L.DomUtil.create('div', 'info legend'),
           grades = [0, 1, 2, 3, 4, 5],
+          labels = [];
 
-      // loop through density intervals and generate a label with a colored square for each interval
+      // loop through our intervals and generate a label with a colored square for each interval
       for (var i = 0; i < grades.length; i++) {
           div.innerHTML +=
               '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
